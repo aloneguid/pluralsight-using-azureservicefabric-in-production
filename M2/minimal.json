@@ -56,19 +56,16 @@
        "lbID0": "[resourceId('Microsoft.Network/loadBalancers', variables('lbName'))]",
        "lbIPConfig0": "[concat(variables('lbID0'), '/frontendIPConfigurations/LoadBalancerIPConfig')]",
        "lbPoolID0": "[concat(variables('lbID0'), '/backendAddressPools/LoadBalancerBEAddressPool')]",
-       "lbProbeID0": "[concat(variables('lbID0'), '/probes/FabricGatewayProbe')]",
-       "lbHttpProbeID0": "[concat(variables('lbID0'), '/probes/FabricHttpGatewayProbe')]",
+       "lbProbeID0": "[concat(variables('lbID0'), '/probes/FabricManagementProbe')]",
+       "lbHttpProbeID0": "[concat(variables('lbID0'), '/probes/FabricExplorerProbe')]",
        "lbNatPoolID0": "[concat(variables('lbID0'), '/inboundNatPools/LoadBalancerBEAddressNatPool')]",
        "vmNodeType0Name": "MiniSet",
        "fabricTcpGatewayPort": "19000",
        "fabricHttpGatewayPort": "19080",
-       "reverseProxyEndpointPort": "19081",
        "applicationStartPort": "20000",
        "applicationEndPort": "30000",
        "ephemeralStartPort": "49152",
        "ephemeralEndPort": "65534",
-       "loadBalancedAppPort1": "80",
-       "loadBalancedAppPort2": "8081",
        "certificateStoreValue": "My",
        "vmssApiVersion": "2017-03-30",
        "vmImagePublisher": "MicrosoftWindowsServer",
@@ -182,7 +179,7 @@
              ],
              "loadBalancingRules": [
                 {
-                   "name": "LBRule",
+                   "name": "LBFabricManagementRule",
                    "properties": {
                       "backendAddressPool": {
                          "id": "[variables('lbPoolID0')]"
@@ -201,7 +198,7 @@
                    }
                 },
                 {
-                   "name": "LBHttpRule",
+                   "name": "LBFabricExplorerRule",
                    "properties": {
                       "backendAddressPool": {
                          "id": "[variables('lbPoolID0')]"
@@ -218,68 +215,11 @@
                       },
                       "protocol": "Tcp"
                    }
-                },
-                {
-                   "name": "AppPortLBRule1",
-                   "properties": {
-                      "backendAddressPool": {
-                         "id": "[variables('lbPoolID0')]"
-                      },
-                      "backendPort": "[variables('loadBalancedAppPort1')]",
-                      "enableFloatingIP": false,
-                      "frontendIPConfiguration": {
-                         "id": "[variables('lbIPConfig0')]"
-                      },
-                      "frontendPort": "[variables('loadBalancedAppPort1')]",
-                      "idleTimeoutInMinutes": 5,
-                      "probe": {
-                         "id": "[concat(variables('lbID0'), '/probes/AppPortProbe1')]"
-                      },
-                      "protocol": "Tcp"
-                   }
-                },
-                {
-                   "name": "AppPortLBRule2",
-                   "properties": {
-                      "backendAddressPool": {
-                         "id": "[variables('lbPoolID0')]"
-                      },
-                      "backendPort": "[variables('loadBalancedAppPort2')]",
-                      "enableFloatingIP": false,
-                      "frontendIPConfiguration": {
-                         "id": "[variables('lbIPConfig0')]"
-                      },
-                      "frontendPort": "[variables('loadBalancedAppPort2')]",
-                      "idleTimeoutInMinutes": 5,
-                      "probe": {
-                         "id": "[concat(variables('lbID0'), '/probes/AppPortProbe2')]"
-                      },
-                      "protocol": "Tcp"
-                   }
-                },
-                {
-                   "name": "LBSFReverseProxyRule",
-                   "properties": {
-                      "backendAddressPool": {
-                         "id": "[variables('lbPoolID0')]"
-                      },
-                      "backendPort": "[variables('reverseProxyEndpointPort')]",
-                      "enableFloatingIP": false,
-                      "frontendIPConfiguration": {
-                         "id": "[variables('lbIPConfig0')]"
-                      },
-                      "frontendPort": "[variables('reverseProxyEndpointPort')]",
-                      "idleTimeoutInMinutes": 5,
-                      "probe":{
-                         "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-                      },
-                      "protocol": "Tcp"
-                   }
                 }
              ],
              "probes": [
                 {
-                   "name": "FabricGatewayProbe",
+                   "name": "FabricManagementProbe",
                    "properties": {
                       "intervalInSeconds": 5,
                       "numberOfProbes": 2,
@@ -288,39 +228,11 @@
                    }
                 },
                 {
-                   "name": "FabricHttpGatewayProbe",
+                   "name": "FabricExplorerProbe",
                    "properties": {
                       "intervalInSeconds": 5,
                       "numberOfProbes": 2,
                       "port": "[variables('fabricHttpGatewayPort')]",
-                      "protocol": "Tcp"
-                   }
-                },
-                {
-                   "name": "AppPortProbe1",
-                   "properties": {
-                      "intervalInSeconds": 5,
-                      "numberOfProbes": 2,
-                      "port": "[variables('loadBalancedAppPort1')]",
-                      "protocol": "Tcp"
-                   }
-                },
-                {
-                   "name": "AppPortProbe2",
-                   "properties": {
-                      "intervalInSeconds": 5,
-                      "numberOfProbes": 2,
-                      "port": "[variables('loadBalancedAppPort2')]",
-                      "protocol": "Tcp"
-                   }
-                },
-                {
-                   "name": "SFReverseProxyProbe",
-                   "description": "for more see https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-reverseproxy",
-                   "properties": {
-                      "intervalInSeconds": 5,
-                      "numberOfProbes": 2,
-                      "port": "[variables('reverseProxyEndpointPort')]",
                       "protocol": "Tcp"
                    }
                 }
@@ -570,8 +482,7 @@
                    },
                    "httpGatewayEndpointPort": "[variables('fabricHttpGatewayPort')]",
                    "isPrimary": true,
-                   "vmInstanceCount": "[parameters('vmInstanceCount')]",
-                   "reverseProxyEndpointPort": "[variables('reverseProxyEndpointPort')]"
+                   "vmInstanceCount": "[parameters('vmInstanceCount')]"
                 }
              ],
              "reliabilityLevel": "None",
