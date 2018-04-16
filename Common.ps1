@@ -52,7 +52,7 @@ function EnsureKeyVault([string]$Name, [string]$ResourceGroupName, [string]$Loca
     $keyVault
 }
 
-function CreateSelfSignedCertificate($DnsName)
+function CreateSelfSignedCertificate([string]$DnsName, [switch]$AsString = $false)
 {
     Write-Host "Creating self-signed certificate with dns name $DnsName"
 
@@ -72,8 +72,19 @@ function CreateSelfSignedCertificate($DnsName)
     Write-Host "  exported."
 
     $thumbprint
-    $certPassword
-    $filePath
+
+    if($AsString.IsPresent)
+    {
+        $secret = GetCertificateAsString $filePath $certPassword
+        #Remove-Item $filePath
+        #Write-Host "  removed cert file as it's requested as a string"
+        $secret
+    }
+    else
+    {
+        $certPassword
+        $filePath
+    }
 }
 
 function ImportCertificateIntoKeyVault([string]$KeyVaultName, [string]$CertName, [string]$CertFilePath, [string]$CertPassword)
@@ -89,4 +100,43 @@ function ImportCertificateIntoKeyVault([string]$KeyVaultName, [string]$CertName,
 function GeneratePassword()
 {
     [System.Web.Security.Membership]::GeneratePassword(15,2)
+}
+
+function GetCertificateAsString([string]$CertFilePath, [string]$CertPassword)
+{
+    $flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
+    $collection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection 
+    $collection.Import($CertFilePath, $CertPassword, $flag)
+    $pkcs12ContentType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12
+    $clearBytes = $collection.Export($pkcs12ContentType)
+    $fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
+    $fileContentEncoded
+}
+
+function ImportStringCertificateIntoKeyVault([string]$KeyVaultName, [string]$CertName, [string]$CertString)
+{
+    #$secret = ConvertTo-SecureString -String $CertString -AsPlainText –Force
+    #$secretContentType = "application/x-pkcs12"
+    #Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $CertName -SecretValue $secret -ContentType $secretContentType
+}
+
+function ReadConfig($Name)
+{
+    $path = "$PSScriptRoot\$Name"
+
+    if(Test-Path $path)
+    {
+        [pscustomobject](Get-Content $path -Raw | ConvertFrom-StringData)
+    }
+    else
+    {
+        @{}
+    }
+}
+
+function WriteConfig($Name, $Config)
+{
+    $path = "$PSScriptRoot\$Name"
+
+    Convertto
 }

@@ -6,3 +6,4 @@ Index:
 
 - Module 1. Introduction (no materials).
 - [Module 2](M2/m2.md).
+- [Module 3](M3/m3.md).
