@@ -55,17 +55,18 @@ function EnsureKeyVault([string]$Name, [string]$ResourceGroupName, [string]$Loca
 function CreateSelfSignedCertificate([string]$DnsName, [switch]$AsString = $false)
 {
     Write-Host "Creating self-signed certificate with dns name $DnsName"
+    
+    $filePath = "$PSScriptRoot\$DnsName.pfx"
 
     Write-Host "  generating password... " -NoNewline
-    $certPassword = [System.Web.Security.Membership]::GeneratePassword(15,2)
+    $certPassword = GeneratePassword
     Write-Host "$certPassword"
 
     Write-Host "  generating certificate... " -NoNewline
     $securePassword = ConvertTo-SecureString $certPassword -AsPlainText -Force
     $thumbprint = (New-SelfSignedCertificate -DnsName $DnsName -CertStoreLocation Cert:\CurrentUser\My -KeySpec KeyExchange).Thumbprint
     Write-Host "$thumbprint."
-
-    $filePath = "$PSScriptRoot\$DnsName.pfx"
+    
     Write-Host "  exporting to $filePath..."
     $certContent = (Get-ChildItem -Path cert:\CurrentUser\My\$thumbprint)
     $t = Export-PfxCertificate -Cert $certContent -FilePath $filePath -Password $securePassword
@@ -76,8 +77,6 @@ function CreateSelfSignedCertificate([string]$DnsName, [switch]$AsString = $fals
     if($AsString.IsPresent)
     {
         $secret = GetCertificateAsString $filePath $certPassword
-        #Remove-Item $filePath
-        #Write-Host "  removed cert file as it's requested as a string"
         $secret
     }
     else

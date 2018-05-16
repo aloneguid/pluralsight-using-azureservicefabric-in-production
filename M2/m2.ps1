@@ -24,6 +24,8 @@ $certThumbprint, $certPassword, $certPath = CreateSelfSignedCertificate $Name
 # Import the certificate into Key Vault
 $kvCert = ImportCertificateIntoKeyVault $KeyVaultName $Name $certPath $certPassword
 
+exit
+
 Write-Host "Deploying cluster with ARM template..."
 $armParameters = @{
     namePart = $Name;

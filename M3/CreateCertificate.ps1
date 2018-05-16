@@ -12,6 +12,7 @@ Write-Host $config.CertValue
 # For development purposes, we create a self-signed cluster certificate here. 
 $certThumbprint, $certString = CreateSelfSignedCertificate -DnsName "octometa" -AsString
 
+Write-Host "---"
 Write-Host "thumb: $certThumbprint"
 Write-Host "content: $certString"
 
