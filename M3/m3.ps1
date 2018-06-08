@@ -4,9 +4,9 @@ param(
 
 . "$PSScriptRoot\..\Common.ps1"
 
-$ResourceGroupName = "PS-M2-$Name"  # Resource group everything will be created in
-$Location = "West Europe"           # Physical location of all the resources
-$KeyVaultName = "$Name-psm2vault"   # name of the Key Vault
+$ResourceGroupName = "ASF-$Name"  # Resource group everything will be created in
+$Location = "West Europe"         # Physical location of all the resources
+$KeyVaultName = "$Name-vault"     # name of the Key Vault
 
 # Check that you're logged in to Azure before running anything at all, the call will
 # exit the script if you're not
@@ -31,11 +31,12 @@ $armParameters = @{
     sourceVaultResourceId = $keyVault.ResourceId;
     certificateUrlValue = $kvCert.SecretId;
     rdpPassword = GeneratePassword;
+    vmInstanceCount = 5;
   }
 
 New-AzureRmResourceGroupDeployment `
   -ResourceGroupName $ResourceGroupName `
-  -TemplateFile "$PSScriptRoot\minimal.json" `
+  -TemplateFile "$PSScriptRoot\production.json" `
   -Mode Incremental `
   -TemplateParameterObject $armParameters `
   -Verbose

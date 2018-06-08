@@ -67,7 +67,6 @@
        "ephemeralStartPort": "49152",
        "ephemeralEndPort": "65534",
        "certificateStoreValue": "My",
-       "vmssApiVersion": "2017-03-30",
        "vmImagePublisher": "MicrosoftWindowsServer",
        "vmImageOffer": "WindowsServer",
        "vmImageSku": "2016-Datacenter-with-Containers",
@@ -254,7 +253,7 @@
           }
        },
        {
-          "apiVersion": "[variables('vmssApiVersion')]",
+          "apiVersion": "2017-03-30",
           "type": "Microsoft.Compute/virtualMachineScaleSets",
           "name": "[variables('vmNodeType0Name')]",
           "location": "[resourceGroup().location]",
