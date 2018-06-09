@@ -32,7 +32,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Pluralsight.SfProd.CpuBurner\Pluralsight.SfProd.CpuBurner.csproj" />
     <ProjectReference Include="..\Pluralsight.SfProd.WebApi\Pluralsight.SfProd.WebApi.csproj" />
+    <ProjectReference Include="..\Pluralsight.SfProd.WebSite\Pluralsight.SfProd.WebSite.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
   <PropertyGroup>
