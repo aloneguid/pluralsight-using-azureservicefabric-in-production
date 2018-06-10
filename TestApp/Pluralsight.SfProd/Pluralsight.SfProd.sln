@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pluralsight.SfProd.WebSite"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pluralsight.SfProd.CpuBurner", "Pluralsight.SfProd.CpuBurner\Pluralsight.SfProd.CpuBurner.csproj", "{6C1BBDAC-B3C1-454D-9050-014A7E47868D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pluralsight.SfProd.Contracts", "Pluralsight.SfProd.Contracts\Pluralsight.SfProd.Contracts.csproj", "{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{6C1BBDAC-B3C1-454D-9050-014A7E47868D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C1BBDAC-B3C1-454D-9050-014A7E47868D}.Release|x64.ActiveCfg = Release|Any CPU
 		{6C1BBDAC-B3C1-454D-9050-014A7E47868D}.Release|x64.Build.0 = Release|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Debug|x64.Build.0 = Debug|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Release|x64.ActiveCfg = Release|Any CPU
+		{2F2EE7F0-1325-4022-A9EF-72BD13B9A601}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

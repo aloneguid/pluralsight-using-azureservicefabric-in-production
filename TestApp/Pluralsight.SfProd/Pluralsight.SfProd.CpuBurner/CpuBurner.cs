@@ -7,17 +7,31 @@ using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Data.Collections;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using Microsoft.ServiceFabric.Services.Remoting;
+using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+using Pluralsight.SfProd.Contracts;
+using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
 
 namespace Pluralsight.SfProd.CpuBurner
 {
     /// <summary>
     /// An instance of this class is created for each service replica by the Service Fabric runtime.
     /// </summary>
-    internal sealed class CpuBurner : StatefulService
+    internal sealed class CpuBurner : StatefulService, ICpuBurnerService
     {
         public CpuBurner(StatefulServiceContext context)
             : base(context)
         { }
+
+        public Task<int> GetTransactionsPerSecondAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetTransactionsPerSecondAsync(int transactionsPerSecond)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.
@@ -28,7 +42,10 @@ namespace Pluralsight.SfProd.CpuBurner
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
         {
-            return new ServiceReplicaListener[0];
+            return new[]
+            {
+                new ServiceReplicaListener(ctx => new FabricTransportServiceRemotingListener(ctx, this))
+            };
         }
 
         /// <summary>
