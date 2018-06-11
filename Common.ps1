@@ -52,7 +52,7 @@ function EnsureKeyVault([string]$Name, [string]$ResourceGroupName, [string]$Loca
     $keyVault
 }
 
-function CreateSelfSignedCertificate([string]$DnsName, [switch]$AsString = $false)
+function CreateSelfSignedCertificate([string]$DnsName)
 {
     Write-Host "Creating self-signed certificate with dns name $DnsName"
     
@@ -70,24 +70,19 @@ function CreateSelfSignedCertificate([string]$DnsName, [switch]$AsString = $fals
     Write-Host "  exporting to $filePath..."
     $certContent = (Get-ChildItem -Path cert:\CurrentUser\My\$thumbprint)
     $t = Export-PfxCertificate -Cert $certContent -FilePath $filePath -Password $securePassword
+    Set-Content -Path "$PSScriptRoot\$DnsName.thumb.txt" -Value $thumbprint
+    Set-Content -Path "$PSScriptRoot\$DnsName.pwd.txt" -Value $certPassword
     Write-Host "  exported."
 
     $thumbprint
-
-    if($AsString.IsPresent)
-    {
-        $secret = GetCertificateAsString $filePath $certPassword
-        $secret
-    }
-    else
-    {
-        $certPassword
-        $filePath
-    }
+    $certPassword
+    $filePath
 }
 
 function ImportCertificateIntoKeyVault([string]$KeyVaultName, [string]$CertName, [string]$CertFilePath, [string]$CertPassword)
 {
+    #Write-Host
+
     Write-Host "Importing certificate..."
     Write-Host "  generating secure password..."
     $securePassword = ConvertTo-SecureString $CertPassword -AsPlainText -Force
@@ -101,41 +96,37 @@ function GeneratePassword()
     [System.Web.Security.Membership]::GeneratePassword(15,2)
 }
 
-function GetCertificateAsString([string]$CertFilePath, [string]$CertPassword)
+function EnsureSelfSignedCertificate([string]$KeyVaultName, [string]$CertName)
 {
-    $flag = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable
-    $collection = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2Collection 
-    $collection.Import($CertFilePath, $CertPassword, $flag)
-    $pkcs12ContentType = [System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12
-    $clearBytes = $collection.Export($pkcs12ContentType)
-    $fileContentEncoded = [System.Convert]::ToBase64String($clearBytes)
-    $fileContentEncoded
-}
+    $localPath = "$PSScriptRoot\$CertName.pfx"
+    $existsLocally = Test-Path $localPath
 
-function ImportStringCertificateIntoKeyVault([string]$KeyVaultName, [string]$CertName, [string]$CertString)
-{
-    #$secret = ConvertTo-SecureString -String $CertString -AsPlainText –Force
-    #$secretContentType = "application/x-pkcs12"
-    #Set-AzureKeyVaultSecret -VaultName $KeyVaultName -Name $CertName -SecretValue $secret -ContentType $secretContentType
-}
+    # create or read certificate
+    if($existsLocally) {
+        Write-Host "Certificate exists locally."
+        $thumbprint = Get-Content "$PSScriptRoot\$Certname.thumb.txt"
+        $password = Get-Content "$PSScriptRoot\$Certname.pwd.txt"
+        Write-Host "  thumb: $thumbprint, pass: $password"
 
-function ReadConfig($Name)
-{
-    $path = "$PSScriptRoot\$Name"
-
-    if(Test-Path $path)
-    {
-        [pscustomobject](Get-Content $path -Raw | ConvertFrom-StringData)
+    } else {
+        $thumbprint, $password, $localPath = CreateSelfSignedCertificate $CertName
     }
-    else
-    {
-        @{}
+
+    #import into vault if needed
+    Write-Host "Checking certificate in key vault..."
+    $kvCert = Get-AzureKeyVaultCertificate -VaultName $KeyVaultName -Name $CertName
+    if($kvCert -eq $null) {
+        Write-Host "  importing..."
+        $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+        $kvCert = Import-AzureKeyVaultCertificate -VaultName $KeyVaultName -Name $CertName -FilePath $localPath -Password $securePassword
+    } else {
+        Write-Host "  certificate already imported."
     }
+
+    $kvCert
 }
 
-function WriteConfig($Name, $Config)
+function EnsureAzureAdApplications()
 {
-    $path = "$PSScriptRoot\$Name"
-
-    Convertto
+    #see https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#set-up-azure-active-directory-for-client-authentication
 }

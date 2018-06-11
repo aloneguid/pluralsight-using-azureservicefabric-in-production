@@ -11,6 +11,7 @@ using Microsoft.ServiceFabric.Services.Remoting;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
 using Pluralsight.SfProd.Contracts;
 using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
+using Microsoft.ServiceFabric.Data;
 
 namespace Pluralsight.SfProd.CpuBurner
 {
@@ -23,14 +24,28 @@ namespace Pluralsight.SfProd.CpuBurner
             : base(context)
         { }
 
-        public Task<int> GetTransactionsPerSecondAsync()
+        public async Task<int> GetTransactionsPerSecondAsync()
         {
-            throw new NotImplementedException();
+            var state = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, int>>("state");
+
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<int> tps = await state.TryGetValueAsync(tx, "tps");
+
+                return tps.HasValue ? tps.Value : 0;
+            }
         }
 
-        public Task SetTransactionsPerSecondAsync(int transactionsPerSecond)
+        public async Task SetTransactionsPerSecondAsync(int transactionsPerSecond)
         {
-            throw new NotImplementedException();
+            var state = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, int>>("state");
+
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                await state.SetAsync(tx, "tps", transactionsPerSecond);
+
+                await tx.CommitAsync();
+            }
         }
 
         /// <summary>

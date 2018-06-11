@@ -49,8 +49,6 @@
     "subnet1Prefix": "10.0.0.0/24",
     "lbName": "[concat('lb-', parameters('namePart'))]",
     "lbIPName": "[concat('ip-', parameters('namePart'))]",
-    "appgIPName": "[concat('appgip-', parameters('namePart'))]",
-    "appgIPRef": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appgIPName'))]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
     "subnet1Ref": "[concat(variables('vnetID'), '/subnets/', variables('subnet1Name'))]",
     "supportLogStorageAccountName": "[concat('logs', uniqueString(resourceGroup().id))]",
@@ -61,7 +59,6 @@
     "lbProbeID0": "[concat(variables('lbID0'), '/probes/FabricGatewayProbe')]",
     "lbHttpProbeID0": "[concat(variables('lbID0'), '/probes/FabricHttpGatewayProbe')]",
     "lbNatPoolID0": "[concat(variables('lbID0'), '/inboundNatPools/LoadBalancerBEAddressNatPool')]",
-    "appGatewayName": "[concat('appg-', parameters('namePart'))]",
     "vmNodeType0Name": "primary",
     "fabricTcpGatewayPort": "19000",
     "fabricHttpGatewayPort": "19080",
@@ -151,118 +148,6 @@
         },
         "publicIPAllocationMethod": "Dynamic"
       }
-    },
-    {
-      "apiVersion": "2016-03-30",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('appgIPName')]",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "PublicIPAddress"
-      },
-      "properties": {
-        "dnsSettings": {
-          "domainNameLabel": "[concat(variables('clusterName'), 'appg')]"
-        },
-        "publicIPAllocationMethod": "Dynamic"
-      }
-    },
-    {
-      "type": "Microsoft.Network/applicationGateways",
-      "name": "[variables('appGatewayName')]",
-      "apiVersion": "2018-02-01",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "sku": {
-          "name": "Standard_Medium",
-          "tier": "Standard",
-          "capacity": 1
-        },
-        "gatewayIPConfigurations": [
-          {
-            "name": "appGatewayIpConfig",
-            "properties": {
-              "subnet": {
-                "id": "[variables('subnet1Ref')]"
-              }
-            }
-          }
-        ],
-        "frontendIPConfigurations": [
-          {
-            "name": "appGatewayFrontendIP",
-            "properties": {
-              "subnet": {
-                "id": "[variables('subnet1Ref')]"
-              }
-            }
-          }
-        ],
-        "frontendPorts": [
-          {
-            "name": "appGatewayFrontendPort",
-            "properties": {
-              "port": 80
-            }
-          }
-        ],
-        "backendAddressPools": [
-          {
-            "name": "appGatewayBackendPool",
-            "properties": {
-              "backendAddresses": []
-            }
-          }
-        ],
-        "backendHttpSettingsCollection": [
-          {
-            "name": "appGatewayBackendHttpSettings",
-            "properties": {
-              "port": 80,
-              "protocol": "Http",
-              "cookieBasedAffinity": "Disabled"
-            }
-          }
-        ],
-        "httpListeners": [
-          {
-            "name": "appGatewayHttpLister",
-            "properties": {
-              "frontendIPConfiguration": {
-                "id" : "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/frontendIPConfigurations/appGatewayFrontendIP')]"
-              },
-              "frontendPort": {
-                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/frontendPorts/appGatewayFrontendPort')]"
-              },
-              "protocol": "Http",
-              "sslCertificate": null
-            }
-          }
-        ],
-        "requestRoutingRules": [
-          {
-            "name": "rule1",
-            "properties": {
-              "RuleType": "Basic",
-              "httpListener": {
-                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/httpListeners/appGatewayHttpListener')]"
-              },
-              "backendAddressPool": {
-                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendAddressPools/appGatewayBackendPool')]"
-              },
-              "backendHttpSettings": {                
-                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', variables('appGatewayName')), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
-              }
-            }
-          }
-        ]
-      },
-      "dependsOn": [
-        "[variables('subnet1Name')]",
-        "[variables('appgIPName')]"
-      ]
     },
     {
       "apiVersion": "2016-03-30",
