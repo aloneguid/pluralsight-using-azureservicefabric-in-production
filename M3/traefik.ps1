@@ -17,7 +17,7 @@ Connect-ServiceFabricCluster -ConnectionEndpoint $Endpoint `
     -StoreLocation CurrentUser -StoreName My
 
 Write-Host "uploading Traefik binary to the cluster..."
-Copy-ServiceFabricApplicationPackage -ApplicationPackagePath $Path -ApplicationPackagePathInImageStore $TypeName -TimeoutSec 1800
+Copy-ServiceFabricApplicationPackage -ApplicationPackagePath $Path -ApplicationPackagePathInImageStore $TypeName -TimeoutSec 1800 -ShowProgress
 
 Write-Host "registering application..."
 Register-ServiceFabricApplicationType -ApplicationPathInImageStore $TypeName
