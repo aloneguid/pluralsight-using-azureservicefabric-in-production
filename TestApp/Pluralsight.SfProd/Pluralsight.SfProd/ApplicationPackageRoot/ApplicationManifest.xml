@@ -30,7 +30,7 @@
          The attribute ServiceTypeName below must match the name defined in the imported ServiceManifest.xml file. -->
     <Service Name="Pluralsight.SfProd.CpuBurner" ServicePackageActivationMode="ExclusiveProcess">
       <StatefulService ServiceTypeName="Pluralsight.SfProd.CpuBurnerType" TargetReplicaSetSize="[Pluralsight.SfProd.CpuBurner_TargetReplicaSetSize]" MinReplicaSetSize="[Pluralsight.SfProd.CpuBurner_MinReplicaSetSize]">
-        <UniformInt64Partition PartitionCount="[Pluralsight.SfProd.CpuBurner_PartitionCount]" LowKey="-9223372036854775808" HighKey="9223372036854775807" />
+        <UniformInt64Partition PartitionCount="[Pluralsight.SfProd.CpuBurner_PartitionCount]" LowKey="0" HighKey="9" />
       </StatefulService>
     </Service>
     <Service Name="Pluralsight.SfProd.WebSite" ServicePackageActivationMode="ExclusiveProcess">

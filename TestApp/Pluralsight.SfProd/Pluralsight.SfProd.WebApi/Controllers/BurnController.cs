@@ -11,8 +11,10 @@ using Pluralsight.SfProd.Contracts;
 namespace Pluralsight.SfProd.WebApi.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class BurnController : Controller
     {
+        const int partitionCount = 10;
+
         private ICpuBurnerService GetBurner(long partition)
         {
             var proxyFactory = new ServiceProxyFactory(c => new FabricTransportServiceRemotingClientFactory());
@@ -22,13 +24,13 @@ namespace Pluralsight.SfProd.WebApi.Controllers
         }
 
 
-        // GET api/values
+        // GET api/burn
         [HttpGet]
         public async Task<int[]> Get()
         {
             var result = new List<int>();
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < partitionCount; i++)
             {
                 int tps = await GetBurner(i).GetTransactionsPerSecondAsync();
 
@@ -39,11 +41,11 @@ namespace Pluralsight.SfProd.WebApi.Controllers
         }
 
 
-        // POST api/values
+        // POST api/burn
         [HttpPost]
         public async Task Post(int tps)
         {
-            for(int i = 0; i < 2; i++)
+            for(int i = 0; i < partitionCount; i++)
             {
                 var partition = GetBurner(i);
                 await partition.SetTransactionsPerSecondAsync(tps);
