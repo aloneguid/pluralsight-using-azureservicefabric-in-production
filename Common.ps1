@@ -126,6 +126,19 @@ function EnsureSelfSignedCertificate([string]$KeyVaultName, [string]$CertName)
     $kvCert
 }
 
+function Connect-SecureCluster([string]$ClusterName, [string]$Thumbprint)
+{
+    $Endpoint = "$ClusterName.westeurope.cloudapp.azure.com:19000"
+
+    Write-Host "connecting to cluster $Endpoint using cert thumbprint $Thumbprint..."
+    
+    Connect-ServiceFabricCluster -ConnectionEndpoint $Endpoint `
+        -X509Credential `
+        -ServerCertThumbprint $Thumbprint `
+        -FindType FindByThumbprint -FindValue $Thumbprint `
+        -StoreLocation CurrentUser -StoreName My
+}
+
 function EnsureAzureAdApplications()
 {
     #see https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#set-up-azure-active-directory-for-client-authentication

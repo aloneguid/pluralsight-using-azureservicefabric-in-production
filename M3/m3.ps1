@@ -22,7 +22,6 @@ $keyVault = EnsureKeyVault $KeyVaultName $ResourceGroupName $Location
 # Ensure that self-signed certificate is created and imported into Key Vault
 $cert = EnsureSelfSignedCertificate $KeyVaultName $Name
 
-if($false){
 Write-Host "Applying cluster template..."
 $armParameters = @{
     namePart = $Name;
@@ -32,14 +31,16 @@ $armParameters = @{
     rdpPassword = $rdpPassword;
     vmInstanceCount = 5;
   }
+
 New-AzureRmResourceGroupDeployment `
   -ResourceGroupName $ResourceGroupName `
   -TemplateFile "$PSScriptRoot\production.json" `
   -Mode Incremental `
   -TemplateParameterObject $armParameters `
   -Verbose
-}
 
+
+<#
 Write-Host "Applying Application Gateway ARM template..."
 $armParameters = @{
   namePart = $Name;
@@ -50,7 +51,4 @@ New-AzureRmResourceGroupDeployment `
   -Mode Incremental `
   -TemplateParameterObject $armParameters `
   -Verbose
-
-# NOTES
-# for VM sizes see https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes
-# to get the list of all available locations call Get-AzureRmLocation
+#>

@@ -290,7 +290,8 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[variables('supportLogStorageAccountName')]",
-        "[variables('applicationDiagnosticsStorageAccountName')]"
+        "[variables('applicationDiagnosticsStorageAccountName')]",
+        "[variables('virtualNetworkName')]"
       ],
       "tags": {
         "resourceType": "Service Fabric",
