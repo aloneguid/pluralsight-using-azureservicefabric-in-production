@@ -5,14 +5,17 @@ Write-Host "Loaded $($t.FullName)."
 
 function CheckLoggedIn()
 {
+    Write-Host "Validating if you are logged in..."
     $rmContext = Get-AzureRmContext
 
     if($rmContext.Account -eq $null) {
-        Write-Host "You are not logged into Azure. Use Login-AzureRmAccount to log in first and optionally select a subscription" -ForegroundColor Red
+        Write-Host "  you are not logged into Azure. Use Login-AzureRmAccount to log in first and optionally select a subscription" -ForegroundColor Red
         exit
     }
 
-    Write-Host "You are running as '$($rmContext.Account.Id)' in subscription '$($rmContext.Subscription.Name)'"
+    Write-Host "  account:      '$($rmContext.Account.Id)'"
+    Write-Host "  subscription: '$($rmContext.Subscription.Name)'"
+    Write-Host "  tenant:       '$($rmContext.Tenant.Id)'"
 }
 
 function EnsureResourceGroup([string]$Name, [string]$Location)

@@ -2,7 +2,7 @@
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="Pluralsight.SfProdType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
   <Parameters>
     <Parameter Name="Pluralsight.SfProd.CpuBurner_MinReplicaSetSize" DefaultValue="3" />
-    <Parameter Name="Pluralsight.SfProd.CpuBurner_PartitionCount" DefaultValue="1" />
+    <Parameter Name="Pluralsight.SfProd.CpuBurner_PartitionCount" DefaultValue="10" />
     <Parameter Name="Pluralsight.SfProd.CpuBurner_TargetReplicaSetSize" DefaultValue="3" />
     <Parameter Name="Pluralsight.SfProd.WebSite_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Pluralsight.SfProd.WebApi_InstanceCount" DefaultValue="-1" />
