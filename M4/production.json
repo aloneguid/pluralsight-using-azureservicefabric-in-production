@@ -244,44 +244,6 @@
               },
               "protocol": "Tcp"
             }
-          },
-          {
-            "name": "LBTraefikManagementRule",
-            "properties": {
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID0')]"
-              },
-              "backendPort": "8080",
-              "enableFloatingIP": false,
-              "frontendIPConfiguration": {
-                "id": "[variables('lbIPConfig0')]"
-              },
-              "frontendPort": "8080",
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-              },
-              "protocol": "Tcp"
-            }
-          },
-          {
-            "name": "LBTraefikHttpFrontendRule",
-            "properties": {
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID0')]"
-              },
-              "backendPort": "80",
-              "enableFloatingIP": false,
-              "frontendIPConfiguration": {
-                "id": "[variables('lbIPConfig0')]"
-              },
-              "frontendPort": "80",
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-              },
-              "protocol": "Tcp"
-            }
           }
         ],
         "probes": [

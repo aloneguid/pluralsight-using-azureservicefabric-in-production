@@ -1,11 +1,12 @@
 param(
-   [string] [Parameter(Mandatory = $true)] $Name
+   [string] [Parameter(Mandatory = $true)] $Name,
+   [string] $TemplateName = "silver.json",  # name of the cluster ARM template
+   [string] $Location = "westeurope"        # Physical location of all the resources
 )
 
 . "$PSScriptRoot\..\Common.ps1"
 
 $ResourceGroupName = "ASF-$Name"  # Resource group everything will be created in
-$Location = "West Europe"         # Physical location of all the resources
 $KeyVaultName = "$Name-vault"     # name of the Key Vault
 $rdpPassword = "Password00;;"
 
@@ -22,7 +23,7 @@ $keyVault = EnsureKeyVault $KeyVaultName $ResourceGroupName $Location
 # Ensure that self-signed certificate is created and imported into Key Vault
 $cert = EnsureSelfSignedCertificate $KeyVaultName $Name
 
-Write-Host "Applying cluster template..."
+Write-Host "Applying cluster template $TemplateName..."
 $armParameters = @{
     namePart = $Name;
     certificateThumbprint = $cert.Thumbprint;
@@ -34,21 +35,7 @@ $armParameters = @{
 
 New-AzureRmResourceGroupDeployment `
   -ResourceGroupName $ResourceGroupName `
-  -TemplateFile "$PSScriptRoot\production.json" `
+  -TemplateFile "$PSScriptRoot\$TemplateName" `
   -Mode Incremental `
   -TemplateParameterObject $armParameters `
   -Verbose
-
-
-<#
-Write-Host "Applying Application Gateway ARM template..."
-$armParameters = @{
-  namePart = $Name;
-}
-New-AzureRmResourceGroupDeployment `
-  -ResourceGroupName $ResourceGroupName `
-  -TemplateFile "$PSScriptRoot\appGateway.json" `
-  -Mode Incremental `
-  -TemplateParameterObject $armParameters `
-  -Verbose
-#>
