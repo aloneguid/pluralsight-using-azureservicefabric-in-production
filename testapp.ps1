@@ -11,11 +11,14 @@ $endpoint = "$ClusterName.$Location.cloudapp.azure.com:19000"
 $thumbprint = Get-Content "$PSScriptRoot\$ClusterName.thumb.txt"
 
 Write-Host "connecting to cluster $endpoint using cert thumbprint $thumbprint..."
-Connect-ServiceFabricCluster -ConnectionEndpoint eEndpoint `
+Connect-ServiceFabricCluster -ConnectionEndpoint $endpoint `
     -X509Credential `
     -ServerCertThumbprint $thumbprint `
     -FindType FindByThumbprint -FindValue $thumbprint `
     -StoreLocation CurrentUser -StoreName My
+
+Write-Host "Unregistering $typeName if present..."
+Unregister-ApplicationTypeCompletely $typeName
 
 Write-Host "uploading test application binary to the cluster..."
 Copy-ServiceFabricApplicationPackage -ApplicationPackagePath $path -ApplicationPackagePathInImageStore $typeName -TimeoutSec 1800 -ShowProgress

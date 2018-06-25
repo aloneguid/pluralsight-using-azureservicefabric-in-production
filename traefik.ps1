@@ -11,8 +11,8 @@ param(
 
 . "$PSScriptRoot\Common.ps1"
 
-$certPath = "$PSScriptRoot\$Name.pfx"
-$pass = Get-Content "$PSScriptRoot\$Name.pwd.txt"
+$certPath = "$PSScriptRoot\$ClusterName.pfx"
+$pass = Get-Content "$PSScriptRoot\$ClusterName.pwd.txt"
 $keyPath = "$PSScriptRoot\Traefik\TraefikPkg\code\certs\servicefabric.key"
 $crtPath = "$PSScriptRoot\Traefik\TraefikPkg\code\certs\servicefabric.crt"
 $thumbprint = Get-Content "$PSScriptRoot\$ClusterName.thumb.txt"
@@ -35,6 +35,8 @@ Connect-ServiceFabricCluster -ConnectionEndpoint $Endpoint `
     -ServerCertThumbprint $thumbprint `
     -FindType FindByThumbprint -FindValue $thumbprint `
     -StoreLocation CurrentUser -StoreName My
+
+Unregister-ApplicationTypeCompletely $typeName
 
 # application management
 Write-Host "uploading Traefik binary to the cluster..."

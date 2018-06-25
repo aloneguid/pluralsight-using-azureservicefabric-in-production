@@ -142,7 +142,25 @@ function Connect-SecureCluster([string]$ClusterName, [string]$Thumbprint)
         -StoreLocation CurrentUser -StoreName My
 }
 
-function EnsureAzureAdApplications()
+function Unregister-ApplicationTypeCompletely([string]$ApplicationTypeName)
 {
-    #see https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-creation-via-arm#set-up-azure-active-directory-for-client-authentication
+    Write-Host "checking if application type $ApplicationTypeName is present.."
+    $type = Get-ServiceFabricApplicationType -ApplicationTypeName $ApplicationTypeName
+    if($type -eq $null) {
+        Write-Host "  application is not in the cluster"
+    } else {
+        $runningApps = Get-ServiceFabricApplication -ApplicationTypeName $ApplicationTypeName
+        foreach($app in $runningApps) {
+            $uri = $app.ApplicationName.AbsoluteUri
+            Write-Host "    unregistering '$uri'..."
+
+            $t = Remove-ServiceFabricApplication -ApplicationName $uri -ForceRemove -Verbose -Force
+        }
+
+        Write-Host "  unregistering type..."
+        $t =Unregister-ServiceFabricApplicationType `
+            -ApplicationTypeName $ApplicationTypeName -ApplicationTypeVersion $type.ApplicationTypeVersion `
+            -Force -Confirm
+
+    }
 }

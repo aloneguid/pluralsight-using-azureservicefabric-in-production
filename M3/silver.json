@@ -81,11 +81,6 @@
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('supportLogStorageAccountName')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "SupportLogStorageAccount"
-      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -96,11 +91,6 @@
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('applicationDiagnosticsStorageAccountName')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "DiagnosticsStorageAccount"
-      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -111,11 +101,6 @@
       "apiVersion": "2016-03-30",
       "name": "[variables('virtualNetworkName')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "VirtualNetwork"
-      },
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
@@ -137,11 +122,6 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('lbIPName')]",
       "location": "[resourceGroup().location]",
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "PublicIPAddress"
-      },
       "properties": {
         "dnsSettings": {
           "domainNameLabel": "[variables('clusterName')]"
@@ -157,11 +137,6 @@
       "dependsOn": [
         "[variables('lbIPName')]"
       ],
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "LoadBalancer"
-      },
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -235,82 +210,6 @@
               },
               "protocol": "Tcp"
             }
-          },
-          {
-            "name": "LBPluralsightWebApiRule",
-            "properties": {
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID0')]"
-              },
-              "backendPort": "8382",
-              "enableFloatingIP": false,
-              "frontendIPConfiguration": {
-                "id": "[variables('lbIPConfig0')]"
-              },
-              "frontendPort": "8000",
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-              },
-              "protocol": "Tcp"
-            }
-          },
-          {
-            "name": "LBPluralsightWebSiteRule",
-            "properties": {
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID0')]"
-              },
-              "backendPort": "8242",
-              "enableFloatingIP": false,
-              "frontendIPConfiguration": {
-                "id": "[variables('lbIPConfig0')]"
-              },
-              "frontendPort": "8001",
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-              },
-              "protocol": "Tcp"
-            }
-          },
-          {
-            "name": "LBTraefikManagementRule",
-            "properties": {
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID0')]"
-              },
-              "backendPort": "8080",
-              "enableFloatingIP": false,
-              "frontendIPConfiguration": {
-                "id": "[variables('lbIPConfig0')]"
-              },
-              "frontendPort": "8080",
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-              },
-              "protocol": "Tcp"
-            }
-          },
-          {
-            "name": "LBTraefikHttpFrontendRule",
-            "properties": {
-              "backendAddressPool": {
-                "id": "[variables('lbPoolID0')]"
-              },
-              "backendPort": "80",
-              "enableFloatingIP": false,
-              "frontendIPConfiguration": {
-                "id": "[variables('lbIPConfig0')]"
-              },
-              "frontendPort": "80",
-              "idleTimeoutInMinutes": 5,
-              "probe": {
-                "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
-              },
-              "protocol": "Tcp"
-            }
           }
         ],
         "probes": [
@@ -369,11 +268,6 @@
         "[variables('applicationDiagnosticsStorageAccountName')]",
         "[variables('virtualNetworkName')]"
       ],
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "Cluster scale set"
-      },
       "properties": {
         "upgradePolicy": {
           "mode": "Automatic"
@@ -537,11 +431,6 @@
       "dependsOn": [
         "[variables('supportLogStorageAccountName')]"
       ],
-      "tags": {
-        "resourceType": "Service Fabric",
-        "clusterName": "[variables('clusterName')]",
-        "displayName": "Cluster"
-      },
       "properties": {
         "certificate": {
           "thumbprint": "[parameters('certificateThumbprint')]",
