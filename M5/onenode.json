@@ -213,7 +213,7 @@
                     "frontendPort": "8000",
                     "idleTimeoutInMinutes": 5,
                     "probe": {
-                      "id": "[concat(variables('lbID0'),'/probes/SFReverseProxyProbe')]"
+                      "id": "[variables('lbHttpProbeID0')]"
                     },
                     "protocol": "Tcp"
                   }
