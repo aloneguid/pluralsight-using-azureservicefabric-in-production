@@ -1,14 +1,12 @@
 param(
    [string] [Parameter(Mandatory = $true)] $Name,
-   [string] [Parameter(Mandatory = $true)] $TenantId,
-   [string] [Parameter(Mandatory = $true)] $ClusterApplicationId,
-   [string] [Parameter(Mandatory = $true)] $ClientApplicationId
+   [string] $TemplateName = "onenode.oms.json",  # name of the cluster ARM template
+   [string] $Location = "westeurope"        # Physical location of all the resources
 )
 
 . "$PSScriptRoot\..\Common.ps1"
 
 $ResourceGroupName = "ASF-$Name"  # Resource group everything will be created in
-$Location = "West Europe"         # Physical location of all the resources
 $KeyVaultName = "$Name-vault"     # name of the Key Vault
 $rdpPassword = "Password00;;"
 
@@ -25,9 +23,7 @@ $keyVault = EnsureKeyVault $KeyVaultName $ResourceGroupName $Location
 # Ensure that self-signed certificate is created and imported into Key Vault
 $cert = EnsureSelfSignedCertificate $KeyVaultName $Name
 
-Write-Host "Applying cluster template..."
-Write-Host "  vault resource id: $($keyVault.ResourceId)"
-Write-Host "  cert url value: $($cert.SecretId)"
+Write-Host "Applying cluster template $TemplateName..."
 $armParameters = @{
     namePart = $Name;
     certificateThumbprint = $cert.Thumbprint;
@@ -35,14 +31,11 @@ $armParameters = @{
     certificateUrlValue = $cert.SecretId;
     rdpPassword = $rdpPassword;
     vmInstanceCount = 1;
-    aadTenantId = $TenantId;
-    aadClusterApplicationId = $ClusterApplicationId;
-    aadClientApplicationId = $ClientApplicationId;
   }
 
 New-AzureRmResourceGroupDeployment `
   -ResourceGroupName $ResourceGroupName `
-  -TemplateFile "$PSScriptRoot\onenode.json" `
+  -TemplateFile "$PSScriptRoot\$TemplateName" `
   -Mode Incremental `
   -TemplateParameterObject $armParameters `
   -Verbose
