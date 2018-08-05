@@ -198,25 +198,6 @@
                       },
                       "protocol": "Tcp"
                    }
-                },
-                {
-                  "name": "LBPluralsightWebApiRule",
-                  "properties": {
-                    "backendAddressPool": {
-                      "id": "[variables('lbPoolID0')]"
-                    },
-                    "backendPort": "8382",
-                    "enableFloatingIP": false,
-                    "frontendIPConfiguration": {
-                      "id": "[variables('lbIPConfig0')]"
-                    },
-                    "frontendPort": "8000",
-                    "idleTimeoutInMinutes": 5,
-                    "probe": {
-                      "id": "[variables('lbHttpProbeID0')]"
-                    },
-                    "protocol": "Tcp"
-                  }
                 }
              ],
              "probes": [
