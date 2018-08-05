@@ -3,7 +3,7 @@
   <Parameters>
     <Parameter Name="Pluralsight.SfProd.CpuBurner_MinReplicaSetSize" DefaultValue="1" />
     <Parameter Name="Pluralsight.SfProd.CpuBurner_PartitionCount" DefaultValue="10" />
-    <Parameter Name="Pluralsight.SfProd.CpuBurner_TargetReplicaSetSize" DefaultValue="3" />
+    <Parameter Name="Pluralsight.SfProd.CpuBurner_TargetReplicaSetSize" DefaultValue="1" />
     <Parameter Name="Pluralsight.SfProd.WebSite_InstanceCount" DefaultValue="-1" />
     <Parameter Name="Pluralsight.SfProd.WebApi_InstanceCount" DefaultValue="-1" />
   </Parameters>
