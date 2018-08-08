@@ -20,7 +20,7 @@
                                     AzureActiveDirectory="true"
                                     ServerCertThumbprint="0123456789012345678901234567890123456789" />
   -->
-  <ClusterConnectionParameters ConnectionEndpoint="psm2minic00.westeurope.cloudapp.azure.com:19000" X509Credential="true" ServerCertThumbprint="E2D470D55AAC140BBE8DDAB7AF29CDFF92903714" FindType="FindByThumbprint" FindValue="E2D470D55AAC140BBE8DDAB7AF29CDFF92903714" StoreLocation="CurrentUser" StoreName="My" />
-  <ApplicationParameterFile Path="..\ApplicationParameters\Cloud.xml" />
+  <ClusterConnectionParameters ConnectionEndpoint="psvstsivan.westeurope.cloudapp.azure.com:19000" AzureActiveDirectory="true" ServerCertThumbprint="E195393E2F6C7B2F8C9179BAF92A93435E755008" />
+  <ApplicationParameterFile Path="..\ApplicationParameters\Local.1Node.xml" />
   <CopyPackageParameters CompressPackage="true" />
 </PublishProfile>

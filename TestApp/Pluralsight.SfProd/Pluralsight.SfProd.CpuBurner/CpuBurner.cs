@@ -32,7 +32,7 @@ namespace Pluralsight.SfProd.CpuBurner
             {
                 ConditionalValue<int> tps = await state.TryGetValueAsync(tx, "tps");
 
-                return tps.HasValue ? tps.Value : 10;
+                return tps.HasValue ? tps.Value : 100;
             }
         }
 
