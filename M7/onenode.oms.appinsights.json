@@ -100,8 +100,9 @@
     "vmImageSku": "2016-Datacenter-with-Containers",
     "vmImageVersion": "latest",
     "rdpUserName": "rdpadmin",
-    "omsSolutionName": "[Concat('ServiceFabric', '(', parameters('omsWorkspacename'), ')')]",
-    "omsSolution": "ServiceFabric"
+    "omsSolutionName": "[concat('ServiceFabric', '(', parameters('omsWorkspacename'), ')')]",
+    "omsSolution": "ServiceFabric",
+    "aiName": "[concat(parameters('namePart'), '-ai')]"
   },
   "resources": [
     {
@@ -302,7 +303,8 @@
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[variables('supportLogStorageAccountName')]",
-        "[variables('applicationDiagnosticsStorageAccountName')]"
+        "[variables('applicationDiagnosticsStorageAccountName')]",
+        "[resourceId('microsoft.insights/components/', variables('aiName'))]"
       ],
       "properties": {
         "overprovision": false,
@@ -381,7 +383,15 @@
                             }
                           ]
                         }
-                      }
+                      },
+                      "SinksConfig": {
+                        "Sink": [
+                           {
+                              "name": "applicationInsights",
+                              "ApplicationInsights": "[reference(concat('microsoft.insights/components/', variables('aiName'))).InstrumentationKey]"
+                           }
+                        ]
+                     }
                     }
                   },
                   "typeHandlerVersion": "1.5"
@@ -614,12 +624,32 @@
         "product": "[Concat('OMSGallery/', variables('omsSolution'))]",
         "promotionCode": ""
       }
-    }
+    },
+
+
+    {
+      "name": "[variables('aiName')]",
+      "type": "microsoft.insights/components",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-08-01",
+      "properties": {
+         "ApplicationId": "[parameters('namePart')]",
+         "Application_Type": "web",
+         "Flow_Type": "Redfield",
+         "Request_Source": "IbizaAIExtension"
+      }
+
+   }
+
   ],
   "outputs": {
     "clusterProperties": {
       "value": "[reference(variables('clusterName'))]",
       "type": "object"
+    },
+    "aiKey": {
+      "value": "[reference(concat('microsoft.insights/components/', variables('aiName'))).InstrumentationKey]",
+      "type": "string"
     }
   }
 }
