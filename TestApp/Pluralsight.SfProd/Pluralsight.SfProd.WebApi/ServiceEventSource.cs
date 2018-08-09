@@ -9,7 +9,7 @@ using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace Pluralsight.SfProd.WebApi
 {
-    [EventSource(Name = "MyCompany-Pluralsight.SfProd-Pluralsight.SfProd.WebApi")]
+    [EventSource(Name = "Pluralsight.SfProd.WebApi")]
     internal sealed class ServiceEventSource : EventSource
     {
         public static readonly ServiceEventSource Current = new ServiceEventSource();

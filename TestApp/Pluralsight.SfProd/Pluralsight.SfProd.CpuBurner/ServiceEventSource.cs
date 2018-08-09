@@ -9,7 +9,7 @@ using Microsoft.ServiceFabric.Services.Runtime;
 
 namespace Pluralsight.SfProd.CpuBurner
 {
-    [EventSource(Name = "MyCompany-Pluralsight.SfProd-Pluralsight.SfProd.CpuBurner")]
+    [EventSource(Name = "Pluralsight.SfProd.CpuBurner")]
     internal sealed class ServiceEventSource : EventSource
     {
         public static readonly ServiceEventSource Current = new ServiceEventSource();
