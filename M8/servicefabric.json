@@ -67,7 +67,7 @@
 
     "vmNodeSize": {
       "type": "string",
-      "defaultValue": "Standard_D1_V2",
+      "defaultValue": "Standard_D2_V2",
       "metadata": {
         "description": "VM Size in Azure. The minimum supported use VM SKU is Standard D1 or Standard D1_V2 or equivalent with a minimum of 14 GB of local SSD. Note that D1_V2 is faster and slightly cheapter than D1, therefore it's set as a default option here."
       }
