@@ -130,7 +130,7 @@
     "vmImageSku": "2016-Datacenter-with-Containers",
     "vmImageVersion": "latest",
     "rdpUserName": "rdpadmin",
-    "omsSolutionName": "[concat('sf-', parameters('omsWorkspacename'))]",
+    "omsSolutionName": "[Concat('ServiceFabric', '(', parameters('omsWorkspacename'), ')')]",
     "omsSolution": "ServiceFabric"
   },
   "resources": [
@@ -427,6 +427,13 @@
                               "DefaultEvents": {
                                 "eventDestination": "ServiceFabricReliableServiceEventTable"
                               }
+                            },
+                            {
+                              "provider": "Pluralsight.SfProd.CpuBurner",
+                              "scheduledTransferPeriod": "PT5M",
+                              "DefaultEvents": {
+                                "eventDestination": "Pluralsight"
+                              }
                             }
                           ],
                           "EtwManifestProviderConfiguration": [
@@ -636,7 +643,8 @@
             "tables": [
               "WADServiceFabric*EventTable",
               "WADWindowsEventLogsTable",
-              "WADETWEventTable"
+              "WADETWEventTable",
+              "WADPluralsight"
             ],
             "storageAccount": {
               "id": "[resourceId('Microsoft.Storage/storageaccounts/', variables('applicationDiagnosticsStorageAccountName'))]",
