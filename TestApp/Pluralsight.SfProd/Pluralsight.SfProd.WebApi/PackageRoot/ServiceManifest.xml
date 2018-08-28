@@ -24,7 +24,7 @@
   <CodePackage Name="Code" Version="1.0.0">
     <EntryPoint>
       <ExeHost>
-        <Program>Pluralsight.SfProd.WebApi.exe</Program>
+        <Program>dotnet.exe Pluralsight.SfProd.WebApi.dll</Program>
         <WorkingFolder>CodePackage</WorkingFolder>
       </ExeHost>
     </EntryPoint>

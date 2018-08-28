@@ -8,8 +8,6 @@
         "description": "Name tag. Many resources will depend on this tag to generate full name. Please use short and unique tag. Required."
       }
     },
-
-
     "certificateThumbprint": {
       "type": "string",
       "metadata": {
@@ -28,8 +26,6 @@
         "description": "Refers to the location URL in your key vault where the cluster certificate was uploaded. The format is https://<name of the vault>.vault.azure.net:443/secrets/<exact location>. Required."
       }
     },
-
-
     "aadTenantId": {
       "type": "string",
       "defaultValue": "[subscription().tenantId]"
@@ -40,7 +36,6 @@
     "aadClientApplicationId": {
       "type": "string"
     },
-
     "rdpPassword": {
       "type": "string",
       "defaultValue": "Password00;;",
@@ -48,9 +43,8 @@
         "description": "Password to node VMs RDP connections, defaults to 'Password00;' and you better change it!"
       }
     },
-
     "durabilityLevel": {
-      "type" :"string",
+      "type": "string",
       "defaultValue": "Silver"
     },
     "reliabilityLevel": {
@@ -64,7 +58,6 @@
         "description": "Instance count for node type"
       }
     },
-
     "vmNodeSize": {
       "type": "string",
       "defaultValue": "Standard_D2_V2",
@@ -72,31 +65,10 @@
         "description": "VM Size in Azure. The minimum supported use VM SKU is Standard D1 or Standard D1_V2 or equivalent with a minimum of 14 GB of local SSD. Note that D1_V2 is faster and slightly cheapter than D1, therefore it's set as a default option here."
       }
     },
-
-    "omsWorkspacename": {
-      "type": "string",
-      "defaultValue": "[toLower(concat('oms-', parameters('namePart')))]",
-      "metadata": {
-        "description": "Name of your OMS Log Analytics Workspace"
-      }
-    },
-    "omsRegion": {
-      "type": "string",
-      "defaultValue": "West Europe",
-      "allowedValues": [
-        "West Europe",
-        "East US",
-        "Southeast Asia"
-      ],
-      "metadata": {
-        "description": "Specify the Azure Region for your OMS workspace"
-      }
-    },
     "aiName": {
       "type": "string",
       "defaultValue": "[concat('ai-', parameters('namePart'))]"
     }
-
   },
   "variables": {
     "clusterName": "[parameters('namePart')]",
@@ -117,6 +89,7 @@
     "lbHttpProbeID0": "[concat(variables('lbID0'), '/probes/FabricHttpGatewayProbe')]",
     "lbNatPoolID0": "[concat(variables('lbID0'), '/inboundNatPools/LoadBalancerBEAddressNatPool')]",
     "vmNodeType0Name": "Primary",
+    "vmNodeType0Id": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', variables('vmNodeType0Name'))]",
     "fabricTcpGatewayPort": "19000",
     "fabricHttpGatewayPort": "19080",
     "reverseProxyEndpointPort": "19081",
@@ -129,9 +102,7 @@
     "vmImageOffer": "WindowsServer",
     "vmImageSku": "2016-Datacenter-with-Containers",
     "vmImageVersion": "latest",
-    "rdpUserName": "rdpadmin",
-    "omsSolutionName": "[Concat('ServiceFabric', '(', parameters('omsWorkspacename'), ')')]",
-    "omsSolution": "ServiceFabric"
+    "rdpUserName": "rdpadmin"
   },
   "resources": [
     {
@@ -427,13 +398,6 @@
                               "DefaultEvents": {
                                 "eventDestination": "ServiceFabricReliableServiceEventTable"
                               }
-                            },
-                            {
-                              "provider": "Pluralsight.SfProd.CpuBurner",
-                              "scheduledTransferPeriod": "PT5M",
-                              "DefaultEvents": {
-                                "eventDestination": "Pluralsight"
-                              }
                             }
                           ],
                           "EtwManifestProviderConfiguration": [
@@ -451,30 +415,15 @@
                       },
                       "SinksConfig": {
                         "Sink": [
-                           {
-                              "name": "applicationInsights",
-                              "ApplicationInsights": "[reference(concat('microsoft.insights/components/', parameters('aiName'))).InstrumentationKey]"
-                           }
+                          {
+                            "name": "applicationInsights",
+                            "ApplicationInsights": "[reference(concat('microsoft.insights/components/', parameters('aiName'))).InstrumentationKey]"
+                          }
                         ]
-                     }
+                      }
                     }
                   },
                   "typeHandlerVersion": "1.5"
-                }
-              },
-              {
-                "name": "[concat(variables('vmNodeType0Name'),'OMS')]",
-                "properties": {
-                  "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                  "type": "MicrosoftMonitoringAgent",
-                  "typeHandlerVersion": "1.0",
-                  "autoUpgradeMinorVersion": true,
-                  "settings": {
-                    "workspaceId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename')), '2015-11-01-preview').customerId]"
-                  },
-                  "protectedSettings": {
-                    "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename')),'2015-11-01-preview').primarySharedKey]"
-                  }
                 }
               }
             ]
@@ -618,98 +567,82 @@
         }
       }
     },
-
-    {
-      "apiVersion": "2015-11-01-preview",
-      "location": "[parameters('omsRegion')]",
-      "name": "[parameters('omsWorkspacename')]",
-      "type": "Microsoft.OperationalInsights/workspaces",
-      "properties": {
-        "sku": {
-          "name": "Free"
-        }
-      },
-      "resources": [
-        {
-          "apiVersion": "2015-11-01-preview",
-          "name": "[concat(variables('applicationDiagnosticsStorageAccountName'),parameters('omsWorkspacename'))]",
-          "type": "storageinsightconfigs",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]",
-            "[concat('Microsoft.Storage/storageAccounts/', variables('applicationDiagnosticsStorageAccountName'))]"
-          ],
-          "properties": {
-            "containers": [],
-            "tables": [
-              "WADServiceFabric*EventTable",
-              "WADWindowsEventLogsTable",
-              "WADETWEventTable",
-              "WADPluralsight"
-            ],
-            "storageAccount": {
-              "id": "[resourceId('Microsoft.Storage/storageaccounts/', variables('applicationDiagnosticsStorageAccountName'))]",
-              "key": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('applicationDiagnosticsStorageAccountName')),'2015-06-15').key1]"
-            }
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "name": "System",
-          "type": "datasources",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]"
-          ],
-          "kind": "WindowsEvent",
-          "properties": {
-            "eventLogName": "System",
-            "eventTypes": [
-              {
-                "eventType": "Error"
-              },
-              {
-                "eventType": "Warning"
-              },
-              {
-                "eventType": "Information"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "apiVersion": "2015-11-01-preview",
-      "location": "[parameters('omsRegion')]",
-      "name": "[variables('omsSolutionName')]",
-      "type": "Microsoft.OperationsManagement/solutions",
-      "dependsOn": [
-        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('OMSWorkspacename'))]"
-      ],
-      "properties": {
-        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]"
-      },
-      "plan": {
-        "name": "[variables('omsSolutionName')]",
-        "publisher": "Microsoft",
-        "product": "[Concat('OMSGallery/', variables('omsSolution'))]",
-        "promotionCode": ""
-      }
-    },
-
-
     {
       "name": "[parameters('aiName')]",
       "type": "microsoft.insights/components",
       "location": "[resourceGroup().location]",
       "apiVersion": "2014-08-01",
       "properties": {
-         "ApplicationId": "[parameters('namePart')]",
-         "Application_Type": "web",
-         "Flow_Type": "Redfield",
-         "Request_Source": "IbizaAIExtension"
+        "ApplicationId": "[parameters('namePart')]",
+        "Application_Type": "web",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension"
       }
-   }
-
+    },
+    {
+      "type": "Microsoft.Insights/autoscaleSettings",
+      "apiVersion": "2015-04-01",
+      "name": "[concat('cpuautoscale', tolower(parameters('namePart')))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('vmNodeType0Name'))]"
+      ],
+      "properties": {
+        "name": "[concat('cpuautoscale', tolower(parameters('namePart')))]",
+        "targetResourceUri": "[variables('vmNodeType0Id')]",
+        "enabled": true,
+        "profiles": [
+          {
+            "name": "Profile1",
+            "capacity": {
+              "minimum": 3,
+              "maximum": 5,
+              "default": 3
+            },
+            "rules": [
+              {
+                "metricTrigger": {
+                  "metricName": "Percentage CPU",
+                  "metricNamespace": "",
+                  "metricResourceUri": "[variables('vmNodeType0Id')]",
+                  "timeGrain": "PT1M",
+                  "statistic": "Average",
+                  "timeWindow": "PT5M",
+                  "timeAggregation": "Average",
+                  "operator": "GreaterThan",
+                  "threshold": 75
+                },
+                "scaleAction": {
+                  "direction": "Increase",
+                  "type": "ChangeCount",
+                  "value": "1",
+                  "cooldown": "PT1M"
+                }
+              },
+              {
+                "metricTrigger": {
+                  "metricName": "Percentage CPU",
+                  "metricNamespace": "",
+                  "metricResourceUri": "[variables('vmNodeType0Id')]",
+                  "timeGrain": "PT1M",
+                  "statistic": "Average",
+                  "timeWindow": "PT5M",
+                  "timeAggregation": "Average",
+                  "operator": "LessThan",
+                  "threshold": 25
+                },
+                "scaleAction": {
+                  "direction": "Decrease",
+                  "type": "ChangeCount",
+                  "value": "1",
+                  "cooldown": "PT1M"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
   ],
   "outputs": {
     "clusterProperties": {

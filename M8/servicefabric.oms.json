@@ -1,0 +1,113 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePart": {
+            "type": "string",
+            "metadata": {
+                "description": "Name tag. Many resources will depend on this tag to generate full name. Please use short and unique tag. Required."
+            }
+        },
+        "omsWorkspacename": {
+            "type": "string",
+            "defaultValue": "[toLower(concat('oms-', parameters('namePart')))]",
+            "metadata": {
+                "description": "Name of your OMS Log Analytics Workspace"
+            }
+        },
+        "omsRegion": {
+            "type": "string",
+            "defaultValue": "West Europe",
+            "allowedValues": [
+                "West Europe",
+                "East US",
+                "Southeast Asia"
+            ],
+            "metadata": {
+                "description": "Specify the Azure Region for your OMS workspace"
+            }
+        }
+    },
+    "variables": {
+        "applicationDiagnosticsStorageAccountName": "[concat('diags', uniqueString(resourceGroup().id))]",
+        "omsSolutionName": "[Concat('ServiceFabric', '(', parameters('omsWorkspacename'), ')')]",
+        "omsSolution": "ServiceFabric"
+    },
+    "resources": [
+        {
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('omsRegion')]",
+            "name": "[parameters('omsWorkspacename')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "properties": {
+                "sku": {
+                    "name": "Free"
+                }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "[concat(variables('applicationDiagnosticsStorageAccountName'),parameters('omsWorkspacename'))]",
+                    "type": "storageinsightconfigs",
+                    "dependsOn": [
+                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]",
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('applicationDiagnosticsStorageAccountName'))]"
+                    ],
+                    "properties": {
+                        "containers": [],
+                        "tables": [
+                            "WADServiceFabric*EventTable",
+                            "WADWindowsEventLogsTable",
+                            "WADETWEventTable"
+                        ],
+                        "storageAccount": {
+                            "id": "[resourceId('Microsoft.Storage/storageaccounts/', variables('applicationDiagnosticsStorageAccountName'))]",
+                            "key": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('applicationDiagnosticsStorageAccountName')),'2015-06-15').key1]"
+                        }
+                    }
+                },
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "System",
+                    "type": "datasources",
+                    "dependsOn": [
+                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]"
+                    ],
+                    "kind": "WindowsEvent",
+                    "properties": {
+                        "eventLogName": "System",
+                        "eventTypes": [
+                            {
+                                "eventType": "Error"
+                            },
+                            {
+                                "eventType": "Warning"
+                            },
+                            {
+                                "eventType": "Information"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('omsRegion')]",
+            "name": "[variables('omsSolutionName')]",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "dependsOn": [
+                "[concat('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]"
+            ],
+            "properties": {
+                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('omsWorkspacename'))]"
+            },
+            "plan": {
+                "name": "[variables('omsSolutionName')]",
+                "publisher": "Microsoft",
+                "product": "[Concat('OMSGallery/', variables('omsSolution'))]",
+                "promotionCode": ""
+            }
+        }
+    ]
+}
