@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LogMagic.Microsoft.Azure.ApplicationInsights" Version="2.16.0" />
     <PackageReference Include="Microsoft.ServiceFabric" Version="6.3.162" />
     <PackageReference Include="Microsoft.ServiceFabric.Data" Version="3.2.162" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.2.162" />

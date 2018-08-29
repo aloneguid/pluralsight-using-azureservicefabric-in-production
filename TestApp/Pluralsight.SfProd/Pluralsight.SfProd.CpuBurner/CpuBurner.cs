@@ -12,6 +12,7 @@ using Microsoft.ServiceFabric.Services.Remoting.Runtime;
 using Pluralsight.SfProd.Contracts;
 using Microsoft.ServiceFabric.Services.Remoting.V2.FabricTransport.Runtime;
 using Microsoft.ServiceFabric.Data;
+using LogMagic;
 
 namespace Pluralsight.SfProd.CpuBurner
 {
@@ -20,9 +21,15 @@ namespace Pluralsight.SfProd.CpuBurner
     /// </summary>
     internal sealed class CpuBurner : StatefulService, ICpuBurnerService
     {
+        private static readonly ILog log = L.G(typeof(CpuBurner));
+
         public CpuBurner(StatefulServiceContext context)
             : base(context)
-        { }
+        {
+            L.Config
+                .WriteTo.AzureApplicationInsights("8927d012-0e2f-46cc-8d7e-8a6a154bbc3d")
+                .CollectPerformanceCounters.PlatformDefault();
+        }
 
         public async Task<int> GetTransactionsPerSecondAsync()
         {
@@ -82,7 +89,7 @@ namespace Pluralsight.SfProd.CpuBurner
                     counter += 1;
                 }
 
-                ServiceEventSource.Current.ServiceMessage(Context, "burned {0} cycles", tps);
+                log.Trace("burned {0} cycles", tps);
 
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
