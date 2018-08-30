@@ -1,13 +1,17 @@
 
 # build all
-dotnet build .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd.sln --configuration release
+Write-Host "Building code..."
+dotnet build .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd.sln -c release -v quiet
 
 # package Service Fabric app
-msbuild .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd\Pluralsight.SfProd.sfproj /p:Configuration=Release /t:Package
+Write-Host "Packaging Service Fabric application..."
+msbuild .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd\Pluralsight.SfProd.sfproj /p:Configuration=Release /t:Package /nologo /verbosity:quiet
 
 # compress existing SF package
-Copy-ServiceFabricApplicationPackage -ApplicationPackagePath .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd\pkg\Release -CompressPackage -SkipCopy
+Write-Host "Compressing package..."
+Copy-ServiceFabricApplicationPackage -ApplicationPackagePath .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd\pkg\Release -CompressPackage -SkipCopy -Verbose
 
 # copy to deployment destination
-Copy-Item .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd\pkg\ .\TestAppPkg\ -Recurse -Force
+Write-Host "Copying to TestAppPkg folder..."
+Copy-Item .\TestApp\Pluralsight.SfProd\Pluralsight.SfProd\pkg\Release\ .\TestAppPkg\ -Recurse -Force
 
