@@ -340,6 +340,7 @@
         "upgradePolicy": {
           "mode": "Automatic"
         },
+        "overprovision": false,
         "virtualMachineProfile": {
           "extensionProfile": {
             "extensions": [
