@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LogMagic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
@@ -13,6 +14,8 @@ namespace Pluralsight.SfProd.WebApi.Controllers
     [Route("api/[controller]")]
     public class BurnController : Controller
     {
+        private static readonly ILog log = L.G(typeof(BurnController));
+    
         const int partitionCount = 10;
 
         private ICpuBurnerService GetBurner(long partition)
@@ -30,11 +33,16 @@ namespace Pluralsight.SfProd.WebApi.Controllers
         {
             var result = new List<int>();
 
-            for (int i = 0; i < partitionCount; i++)
+            using (var time = new TimeMeasure())
             {
-                int tps = await GetBurner(i).GetTransactionsPerSecondAsync();
+                for (int i = 0; i < partitionCount; i++)
+                {
+                    int tps = await GetBurner(i).GetTransactionsPerSecondAsync();
 
-                result.Add(tps);
+                    result.Add(tps);
+                }
+
+                log.Request("Get Burn Count", time.ElapsedTicks);
             }
 
             return result.ToArray();
@@ -45,10 +53,16 @@ namespace Pluralsight.SfProd.WebApi.Controllers
         [HttpPost]
         public async Task Post(int tps)
         {
-            for(int i = 0; i < partitionCount; i++)
+            using (var time = new TimeMeasure())
             {
-                var partition = GetBurner(i);
-                await partition.SetTransactionsPerSecondAsync(tps);
+
+                for (int i = 0; i < partitionCount; i++)
+                {
+                    var partition = GetBurner(i);
+                    await partition.SetTransactionsPerSecondAsync(tps);
+                }
+
+                log.Request("Set Burn Count", time.ElapsedTicks);
             }
         }
     }

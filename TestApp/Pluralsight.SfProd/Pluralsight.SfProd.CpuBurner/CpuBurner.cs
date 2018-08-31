@@ -53,6 +53,9 @@ namespace Pluralsight.SfProd.CpuBurner
 
                 await tx.CommitAsync();
             }
+
+            log.Event("Burn Count Changed",
+                "BurnCount", transactionsPerSecond);
         }
 
         /// <summary>
@@ -77,6 +80,8 @@ namespace Pluralsight.SfProd.CpuBurner
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service replica.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
+            log.Event("Burner Started");
+
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();

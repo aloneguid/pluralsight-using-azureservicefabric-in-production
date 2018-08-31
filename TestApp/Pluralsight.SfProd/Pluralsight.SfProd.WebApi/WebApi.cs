@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LogMagic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.ServiceFabric.Services.Communication.AspNetCore;
@@ -20,7 +21,11 @@ namespace Pluralsight.SfProd.WebApi
     {
         public WebApi(StatelessServiceContext context)
             : base(context)
-        { }
+        {
+            L.Config
+                .WriteTo.AzureApplicationInsights("8927d012-0e2f-46cc-8d7e-8a6a154bbc3d")
+                .CollectPerformanceCounters.PlatformDefault();
+        }
 
         /// <summary>
         /// Optional override to create listeners (like tcp, http) for this service instance.
