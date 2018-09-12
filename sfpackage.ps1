@@ -1,3 +1,6 @@
+# clear up the target folder
+Write-Host "deleting files in target folder..."
+Remove-Item -Path .\TestAppPkg -Recurse -Force
 
 # build all
 Write-Host "Building code..."
