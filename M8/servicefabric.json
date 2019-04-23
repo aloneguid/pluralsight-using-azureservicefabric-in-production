@@ -100,7 +100,7 @@
     "certificateStoreValue": "My",
     "vmImagePublisher": "MicrosoftWindowsServer",
     "vmImageOffer": "WindowsServer",
-    "vmImageSku": "2016-Datacenter-with-Containers",
+    "vmImageSku": "2019-Datacenter-Core-with-Containers-smalldisk",
     "vmImageVersion": "latest",
     "rdpUserName": "rdpadmin"
   },
